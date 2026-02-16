@@ -1,0 +1,24 @@
+# ---- Base Image ----
+FROM node:18-alpine
+
+# ---- Create App Directory ----
+WORKDIR /app
+
+# ---- Copy Package Files First (Layer Caching) ----
+COPY package*.json ./
+
+# ---- Install Dependencies ----
+RUN npm install --production
+
+# ---- Copy Application Code ----
+COPY . .
+
+# ---- Expose Port (change per service) ----
+EXPOSE 3004
+
+# ---- Run as Non-Root User (Security Best Practice) ----
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+# ---- Start Application ----
+CMD ["node", "server.js"]
